@@ -1,0 +1,173 @@
+
+
+<link rel="stylesheet" href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css">
+	<!-- Datatable -->
+    <link href="vendor/datatables/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+<body>
+	
+
+
+
+<div id="result"></div>
+        <div class="content-body">
+            <!-- row -->
+            <div class="container-fluid">
+				        
+				
+				<div class="row">
+					<div class="col-xl-12 col-xxl-12 col-sm-12">
+                        <div class="card">
+                            <div class="card-header">
+								<h5 class="card-title">	Registration Info</h5>
+							</div>
+							<div class="card-body">
+                                
+									<div class="row">
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">User Name</label>
+												<input type="text" required id="userName" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Mobile No</label>
+												<input type="number" required id="phone" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Email Here</label>
+												<input type="text" required id="emailId" class="form-control">
+											</div>
+										</div>
+										
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Password</label>
+												<input type="password" required id="password" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Confirm Password</label>
+												<input type="password" required class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Gender</label>
+												<select id="gender" class="form-control">
+													<option value="Gender">Gender</option>
+													<option value="Male">Male</option>
+													<option value="Female">Female</option>
+												</select>
+											</div>
+										</div>
+										
+										<div class="col-lg-12 col-md-12 col-sm-12">
+											<div class="form-group fallback w-100">
+												<input type="file" required id="myFile" class="dropify" data-default-file="">
+											</div>
+										</div>
+										<div class="col-lg-12 col-md-12 col-sm-12">
+											<button  id="adduser" class="btn btn-primary">Submit</button>
+											<button  class="btn btn-light"><a href="index.html">Back</a></button>
+										</div>
+									</div>
+								
+                            </div>
+                        </div>
+                    </div>
+				</div>
+            </div>
+        </div>
+		
+		
+ <script type="module">
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+ import { getFirestore,collection,where,query,getDocs,addDoc} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+ import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+ import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+    const firebaseConfig = {
+    apiKey: "AIzaSyDjRIiXEz-6N94vFvns9ikr1SsgPO3AVw4",
+    authDomain: "rentcar-e964a.firebaseapp.com",
+    projectId: "rentcar-e964a",
+    storageBucket: "rentcar-e964a.appspot.com",
+    messagingSenderId: "200055467355",
+    appId: "1:200055467355:web:0f686a5b2b7f5f09467e7e",
+    measurementId: "G-H6HWT742WV"
+  };
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db=getFirestore(app)
+  const storage = getStorage(app);
+    
+ 
+document.addEventListener('DOMContentLoaded', function() 
+{ 
+async function addUser(event)
+ {
+
+	 console.log("method calling")
+        event.preventDefault();
+        const file = document.getElementById('myFile').files[0];
+		
+        const storageRef = ref(storage, `User Images/`+file.name);   
+        try {
+            await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+			    var userName = document.getElementById("userName").value;
+                var phone = parseInt(document.getElementById("phone").value,10);
+                var email = document.getElementById("emailId").value;
+				var gender=document.getElementById("gender").value;
+				var password = document.getElementById("password").value;
+				
+                
+                console.log("File uploaded successfully!", downloadURL);
+            
+			
+                const imagesCollection = collection(db, 'users');
+				
+				 
+				 
+				 
+                await addDoc(imagesCollection, {
+				  username: userName,
+                  mobileNo: phone,
+                  email: email,
+                  password: password,
+                  gender:gender,
+                  profile: downloadURL
+                });
+             
+       const resultContainer = document.getElementById("result");
+     const document1 = document.createElement("div");
+     document1.innerHTML =`<h4 style='font-family:algerian;color:#00f5d4;align:center;'>Admin Added successfully....</h4>`; 
+	 if(resultContainer.firstChild!=null)resultContainer.replaceChild(document1, resultContainer.firstChild);  
+     else resultContainer.appendChild(document1);
+	 
+         setTimeout(() => {
+    if (resultContainer.contains(document1)) {
+      resultContainer.removeChild(document1);
+    }
+  }, 2000); 
+  
+   
+                localStorage.setItem("email",email);
+				localStorage.setItem("name", userName);
+				localStorage.setItem("photo", downloadURL);
+				localStorage.setItem("mobile",phone);
+    window.location.href = "indexhome.html";  
+
+        } catch (error) {
+            console.error("Error adding document: ", error);
+        }
+    }
+
+    document.getElementById('adduser').addEventListener('click', addUser);
+});
+ </script>
+ 

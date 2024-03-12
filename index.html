@@ -1,0 +1,114 @@
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Login Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="myform">
+      <form method="post">
+        <h2>User LOGIN</h2>
+        <input type="text" id="uid" placeholder="User Name">
+        <input type="password" id="pass" placeholder="Password">
+         <Button id="myButton" style="background-color: black;color:white;width:120px;">Login</Button>
+		 <Button id="newuser" style="background-color: black;color:white;width:120px;">New Users</Button>
+      </form>
+    </div>
+    <div class="image">
+      <img src="images/admin-26.jpg">
+    </div>
+  </div>
+</body>
+
+<div id="validation" align='center'></div>
+
+<script type="module">
+
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+ import { getFirestore,collection,where,query,getDocs,deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"
+ import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDjRIiXEz-6N94vFvns9ikr1SsgPO3AVw4",
+    authDomain: "rentcar-e964a.firebaseapp.com",
+    projectId: "rentcar-e964a",
+    storageBucket: "rentcar-e964a.appspot.com",
+    messagingSenderId: "200055467355",
+    appId: "1:200055467355:web:0f686a5b2b7f5f09467e7e",
+    measurementId: "G-H6HWT742WV"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db=getFirestore(app)
+  
+  
+  document.addEventListener('DOMContentLoaded', function() 
+{
+async function validation(event) {
+    event.preventDefault();  
+   
+    var uid = document.getElementById("uid").value;
+    var pass = document.getElementById("pass").value;
+
+	const usersRef = collection(db, "users");
+	
+	    try {
+        const adminSnapshot = await getDocs(usersRef);
+
+        adminSnapshot.forEach(doc => {
+            const userData = doc.data();
+			   var name=userData.username;
+			   var password=userData.password;
+               
+              
+             	   
+			   
+            if (name == uid && password == pass) 
+			{
+				localStorage.setItem("email", userData.email);
+				localStorage.setItem("name", userData.username);
+				localStorage.setItem("photo", userData.profile);
+				localStorage.setItem("mobile", userData.mobileNo);
+				
+                window.location.href = "indexhome.html";
+            } else {
+               
+            }
+        });
+    } catch (error) {
+        console.error("Error validating user:", error);
+    }
+
+    
+}
+
+  document.getElementById('myButton').addEventListener('click', validation);
+    });
+  
+  
+  
+  
+  
+  
+  
+   document.addEventListener('DOMContentLoaded', function() 
+{
+async function Registration(event) {
+    event.preventDefault();  
+
+  window.location.href = "registration.html";
+}
+
+  document.getElementById('newuser').addEventListener('click', Registration);
+    });
+
+	
+</script>
+
+
+
+
+
